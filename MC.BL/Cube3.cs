@@ -15,6 +15,7 @@ namespace MC.BL
             Left = 4,
             Right = 5,
         }
+
         public Side[] Sides { get; set; }
         public Side this[int index] { get { return Sides[index]; } }
         public Side this[SideNames name] { get { return Sides[(int)name]; } }
@@ -28,6 +29,14 @@ namespace MC.BL
             {
                 Sides[i] = new Side(Size);
                 Sides[i].SetSide(i);
+            }
+        }
+
+        public void StepList(List<string> steps)
+        {
+            for (int i = 0; i < steps.Count; i++)
+            {
+                Step(steps[i]);
             }
         }
 
@@ -56,9 +65,21 @@ namespace MC.BL
 
         void SplitSteps(string steps)
         {
+            Dictionary<char, string> complexSteps = new Dictionary<char, string>()
+            {
+                { 'M',"R L’ x’" },
+                { 'E',"D’ U y’" },
+                { 'S',"F’ B z" },
+                { 'r',"R M’" },
+                { 'I',"L M" },
+                { 'f',"F S" },
+                { 'b',"B S’" },
+                { 'u',"U E" },
+                { 'd',"D E’" },
+            };
             // TODO
         }
-        
+
         public void StepL(int count)
         {
             for (int i = 0; i < count; i++)

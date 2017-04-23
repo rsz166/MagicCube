@@ -15,6 +15,19 @@ namespace MC.BL
             set { Tiles[col, row] = value; }
         }
 
+        public bool IsSameValue
+        {
+            get
+            {
+                var first = Tiles[0, 0];
+                foreach (var tile in Tiles)
+                {
+                    if (tile != first) return false;
+                }
+                return true;
+            }
+        }
+
         public Side(int size = 3)
         {
             Size = size;
