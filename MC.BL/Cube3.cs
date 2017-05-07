@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace MC.BL
@@ -32,6 +33,30 @@ namespace MC.BL
             }
         }
 
+        public Cube3 GetCopy()
+        {
+            var copy = new Cube3();
+            for (int side = 0; side < copy.Sides.Length; side++)
+            {
+                for (int row = 0; row < Size; row++)
+                {
+                    for (int col = 0; col < Size; col++)
+                    {
+                        copy.Sides[side][col, row] = Sides[side][col, row];
+                    }
+                }
+            }
+            return copy;
+        }
+
+        public void Reset()
+        {
+            for (int i = 0; i < Sides.Length; i++)
+            {
+                Sides[i].SetSide(i);
+            }
+        }
+
         public void StepList(List<string> steps)
         {
             for (int i = 0; i < steps.Count; i++)
@@ -40,11 +65,18 @@ namespace MC.BL
             }
         }
 
+        public void Step(IEnumerable<string> steps)
+        {
+            var stepList = steps.ToList();
+            for (int i = 0; i < stepList.Count; i++)
+            {
+                Step(stepList[i]);
+            }
+        }
+
         public void Step(string step)
         {
-            bool reverse = step.Length > 1 && step[1] == '\'';
-            bool twice = step.Length > 1 && step[1] == '2';
-            int count = twice ? 2 : reverse ? 3 : 1;
+            int count = step.Length == 1 ? 1 : GetRotationCount(step[1]);
             switch (step[0])
             {
                 case 'L': StepL(count); break;
@@ -63,8 +95,14 @@ namespace MC.BL
             }
         }
 
-        void SplitSteps(string steps)
+        private int GetRotationCount(char modifier)
         {
+            return modifier == '2' ? 2 : 3;
+        }
+
+        void SplitSteps(string step)
+        {
+            if (string.IsNullOrWhiteSpace(step)) return;
             Dictionary<char, string> complexSteps = new Dictionary<char, string>()
             {
                 { 'M',"R L’ x’" },
@@ -77,7 +115,11 @@ namespace MC.BL
                 { 'u',"U E" },
                 { 'd',"D E’" },
             };
-            // TODO
+            int count = step.Length == 1 ? 1 : GetRotationCount(step[1]);
+            for (int i = 0; i < count; i++)
+            {
+                Step(complexSteps[step[0]].Split(' '));
+            }
         }
 
         public void StepL(int count)
@@ -114,7 +156,7 @@ namespace MC.BL
                 var tmp = this[SideNames.Up].GetRow(0);
                 this[SideNames.Up].SetRow(0, this[SideNames.Right].GetColumn(Size - 1));
                 this[SideNames.Right].SetColumn(Size - 1, this[SideNames.Down].GetRow(Size - 1), true);
-                this[SideNames.Down].SetColumn(Size - 1, this[SideNames.Left].GetColumn(0));
+                this[SideNames.Down].SetRow(Size - 1, this[SideNames.Left].GetColumn(0));
                 this[SideNames.Left].SetColumn(0, tmp, true);
             }
         }
@@ -125,7 +167,7 @@ namespace MC.BL
             {
                 this[SideNames.Front].RotateCw();
                 var tmp = this[SideNames.Up].GetRow(Size - 1);
-                this[SideNames.Up].SetRow(0, this[SideNames.Left].GetColumn(Size - 1), true);
+                this[SideNames.Up].SetRow(Size-1, this[SideNames.Left].GetColumn(Size - 1), true);
                 this[SideNames.Left].SetColumn(Size - 1, this[SideNames.Down].GetRow(0));
                 this[SideNames.Down].SetRow(0, this[SideNames.Right].GetColumn(0), true);
                 this[SideNames.Right].SetColumn(0, tmp);
@@ -151,7 +193,7 @@ namespace MC.BL
             {
                 this[SideNames.Down].RotateCw();
                 var tmp = this[SideNames.Front].GetRow(Size - 1);
-                this[SideNames.Up].SetRow(Size - 1, this[SideNames.Left].GetRow(Size - 1));
+                this[SideNames.Front].SetRow(Size - 1, this[SideNames.Left].GetRow(Size - 1));
                 this[SideNames.Left].SetRow(Size - 1, this[SideNames.Back].GetRow(Size - 1));
                 this[SideNames.Back].SetRow(Size - 1, this[SideNames.Right].GetRow(Size - 1));
                 this[SideNames.Right].SetRow(Size - 1, tmp);

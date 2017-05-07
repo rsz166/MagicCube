@@ -127,7 +127,7 @@ namespace MC.BL
             {
                 int tmp = array[i];
                 array[i] = array[j];
-                array[j] = array[i];
+                array[j] = tmp;
             }
         }
 
