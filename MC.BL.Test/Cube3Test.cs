@@ -48,14 +48,33 @@ namespace MC.BL.Test
         [TestMethod]
         public void Cube3TestStep()
         {
+            string[] steps = {
+                // basic
+                "L", "R", "B", "F", "U", "D", "x", "y", "z",
+                // complex
+                "M", "E", "S", "r", "I", "f", "b", "u", "d"
+            };
             var cube = new Cube3();
+            var copy = cube.GetCopy();
             PrintCube(cube);
-            cube.Step("L");
-            PrintCube(cube);
-            cube.Step("L'");
-            PrintCube(cube);
-            cube.Step("L2");
-            PrintCube(cube);
+            foreach (var step in steps)
+            {
+                Console.WriteLine($"Testing step: {step}");
+                Console.WriteLine("Rotate 4 times");
+                for (int i = 0; i < 4; i++) cube.Step(step);
+                PrintCube(cube);
+                Assert.IsTrue(cube.AreEquals(copy));
+                Console.WriteLine("Rotate back and forth");
+                cube.Step($"{step}'");
+                cube.Step(step);
+                PrintCube(cube);
+                Assert.IsTrue(cube.AreEquals(copy));
+                Console.WriteLine("Rotate double twice");
+                cube.Step($"{step}2");
+                cube.Step($"{step}2");
+                PrintCube(cube);
+                Assert.IsTrue(cube.AreEquals(copy));
+            }
         }
     }
 }

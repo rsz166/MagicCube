@@ -57,13 +57,17 @@ namespace MC.BL
             }
         }
 
-        public void StepList(List<string> steps)
+        public bool AreEquals(Cube3 opponent)
         {
-            for (int i = 0; i < steps.Count; i++)
+            if (opponent == null) return false;
+            for (int side = 0; side < Sides.Length; side++)
             {
-                Step(steps[i]);
+                if (!Sides[side].AreEquals(opponent.Sides[side])) return false;
             }
+            return true;
         }
+
+        #region Complex steps
 
         public void Step(IEnumerable<string> steps)
         {
@@ -121,6 +125,10 @@ namespace MC.BL
                 Step(complexSteps[step[0]].Split(' '));
             }
         }
+
+        #endregion
+
+        #region Basic steps
 
         public void StepL(int count)
         {
@@ -247,5 +255,7 @@ namespace MC.BL
                 this[SideNames.Right].RotateCw();
             }
         }
+
+        #endregion
     }
 }
